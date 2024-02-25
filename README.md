@@ -1,2 +1,2 @@
-# oauth-playground
-Playing around with OAuth in Java
+# oauth2-java-example
+Playing around with OAuth2 in Java
