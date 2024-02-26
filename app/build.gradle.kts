@@ -18,7 +18,7 @@ java {
 }
 
 application {
-    mainClass = "org.example.OAuth2Example"
+    mainClass = "org.hbhbnr.OAuth2Example"
 }
 
 tasks.named<Test>("test") {
