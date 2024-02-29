@@ -5,7 +5,7 @@ on: [push]
 jobs:
 
   runtests:
-    runs-on: eclipse-temurin:21-jdk
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
     - name: Run tests with gradle wrapper
