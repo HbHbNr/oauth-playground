@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,11 +20,12 @@ public class Router implements HttpHandler {
     private static final String loginPage = "/login";
     private static final Set<String> pathsWithoutLogin;
     static {
-        pathsWithoutLogin = new HashSet<String>();
-        pathsWithoutLogin.add(loginPage);
-        pathsWithoutLogin.add(shutdownPage);
-        pathsWithoutLogin.add("/favicon");
-        pathsWithoutLogin.add("/favicon.ico");
+        final Set<String> pathsWithoutLoginTmp = new HashSet<String>();
+        pathsWithoutLoginTmp.add(loginPage);
+        pathsWithoutLoginTmp.add(shutdownPage);
+        pathsWithoutLoginTmp.add("/favicon");
+        pathsWithoutLoginTmp.add("/favicon.ico");
+        pathsWithoutLogin = Collections.unmodifiableSet(pathsWithoutLoginTmp);
     }
     private static final byte[] faviconBytes = {0,0,1,0,1,0,16,16,2,0,1,0,1,0,-80,0,0,0,22,0,0,0,40,0,0,0,16,0,0,0,32,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,96,0,0,0,96,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,-128,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
