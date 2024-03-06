@@ -16,18 +16,19 @@ import com.sun.net.httpserver.HttpServer;
 
 public class Router implements HttpHandler {
 
-    private static final String shutdownPage = "/shutdown";
-    private static final String loginPage = "/login";
-    private static final Set<String> pathsWithoutLogin;
+    private static final String SHUTDOWN_PAGE = "/shutdown";
+    private static final String LOGIN_PAGE = "/login";
+    private static final Set<String> PATHS_WITHOUT_LOGIN;
     static {
         final Set<String> pathsWithoutLoginTmp = new HashSet<String>();
-        pathsWithoutLoginTmp.add(loginPage);
-        pathsWithoutLoginTmp.add(shutdownPage);
+        pathsWithoutLoginTmp.add(LOGIN_PAGE);
+        pathsWithoutLoginTmp.add(SHUTDOWN_PAGE);
         pathsWithoutLoginTmp.add("/favicon");
         pathsWithoutLoginTmp.add("/favicon.ico");
-        pathsWithoutLogin = Collections.unmodifiableSet(pathsWithoutLoginTmp);
+        PATHS_WITHOUT_LOGIN = Collections.unmodifiableSet(pathsWithoutLoginTmp);
     }
-    private static final byte[] faviconBytes = {0,0,1,0,1,0,16,16,2,0,1,0,1,0,-80,0,0,0,22,0,0,0,40,0,0,0,16,0,0,0,32,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,96,0,0,0,96,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,-128,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private static final byte[] FAVICON_BYTES = {0,0,1,0,1,0,16,16,2,0,1,0,1,0,-80,0,0,0,22,0,0,0,40,0,0,0,16,0,0,0,32,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,96,0,0,0,96,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,-128,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private static final String SESSION_ID_COOKIE = "SESSION_ID";
 
     private boolean run = true;
 
@@ -59,7 +60,7 @@ public class Router implements HttpHandler {
 
         // redirect to login page if path is not on the allowlist
         if (!loggedIn(requestHeaders)) {
-            if (!pathsWithoutLogin.contains(path)) {
+            if (!PATHS_WITHOUT_LOGIN.contains(path)) {
                 redirectToLoginPage(path, httpExchange);
                 return;
             }
@@ -69,7 +70,7 @@ public class Router implements HttpHandler {
         final byte[] responseBytes;
         final String contentType;
         switch (path) {
-            case shutdownPage:
+            case SHUTDOWN_PAGE:
                 statusCode = 200;
                 responseBytes = "exit".getBytes(StandardCharsets.UTF_8);
                 contentType = "text/plain";
@@ -80,7 +81,7 @@ public class Router implements HttpHandler {
 //                statusCode = 204;
 //                responseBytes = "".getBytes(StandardCharsets.UTF_8);
                 statusCode = 200;
-                responseBytes = faviconBytes;
+                responseBytes = FAVICON_BYTES;
                 contentType = "image/x-icon";
                 break;
             case "/css/style.css":
@@ -93,7 +94,7 @@ public class Router implements HttpHandler {
                 responseBytes = "Welcome!".getBytes(StandardCharsets.UTF_8);
                 contentType = "text/html";
                 break;
-            case loginPage:
+            case LOGIN_PAGE:
                 statusCode = 200;
                 responseBytes = "Login page...".getBytes(StandardCharsets.UTF_8);
                 contentType = "text/html";
@@ -123,9 +124,9 @@ public class Router implements HttpHandler {
 
     private void redirectToLoginPage(final String path, final HttpExchange httpExchange)
             throws IOException {
-        httpExchange.getResponseHeaders().set("Location", loginPage);
+        httpExchange.getResponseHeaders().set("Location", LOGIN_PAGE);
         httpExchange.sendResponseHeaders(307, -1);
-        System.out.println("Redirection from " + path + " to " + loginPage);
+        System.out.println("Redirection from " + path + " to " + LOGIN_PAGE);
     }
 
 }
