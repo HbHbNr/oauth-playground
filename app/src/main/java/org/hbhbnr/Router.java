@@ -2,12 +2,16 @@ package org.hbhbnr;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.HttpCookie;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -47,19 +51,29 @@ public class Router implements HttpHandler {
         httpServer.stop(0);
     }
 
-    private boolean loggedIn(final Headers requestHeaders) {
+    private boolean loggedIn(final Headers requestHeaders, final List<HttpCookie> cookiesOrNull) {
+        if (cookiesOrNull == null)
+            return false;
         return false;
     }
 
     @Override
     public void handle(final HttpExchange httpExchange) throws IOException {
         final URI requestURI = httpExchange.getRequestURI();
-        System.out.println(requestURI);
+        System.out.println("\nrequestURI: " + requestURI);
         final String path = requestURI.getPath();
         final Headers requestHeaders = httpExchange.getRequestHeaders();
+        final String cookieHeader = requestHeaders.getFirst("Cookie");
+        System.out.println("cookieHeader: " + cookieHeader);
+        final List<HttpCookie> cookiesOrNull = parseCookieHeader(cookieHeader);
+        System.out.println("Cookies: " + cookiesOrNull);
+        System.out.println("0: " + cookiesOrNull.get(0));
+        System.out.println("0: " + cookiesOrNull.get(0).getName());
+        System.out.println("0: " + cookiesOrNull.get(0).getValue());
+        System.out.println("0: " + cookiesOrNull.get(0).getVersion());
 
         // redirect to login page if path is not on the allowlist
-        if (!loggedIn(requestHeaders)) {
+        if (!loggedIn(requestHeaders, cookiesOrNull)) {
             if (!PATHS_WITHOUT_LOGIN.contains(path)) {
                 redirectToLoginPage(path, httpExchange);
                 return;
@@ -120,6 +134,21 @@ public class Router implements HttpHandler {
             os.write(responseBytes);
             os.close();
         }
+    }
+
+    private static final Pattern COOKIE_SPLIT_PATTERN = Pattern.compile("; ");
+    private static final Pattern NAME_VALUE_SPLIT_PATTERN = Pattern.compile("=");
+    private List<HttpCookie> parseCookieHeader(final String cookieHeader) {
+        if (cookieHeader == null)
+            return null;
+
+        final List<HttpCookie> cookies = new ArrayList<HttpCookie>();
+        final String[] cookieStrings = COOKIE_SPLIT_PATTERN.split(cookieHeader);
+        for (final String cookieString : cookieStrings) {
+            final String[] nameAndValue = NAME_VALUE_SPLIT_PATTERN.split(cookieString);
+            cookies.add(new HttpCookie(nameAndValue[0], nameAndValue[1]));
+        }
+        return cookies;
     }
 
     private void redirectToLoginPage(final String path, final HttpExchange httpExchange)
